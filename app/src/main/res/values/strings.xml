@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">BlockPC</string>
     <string name="title_your_workstations">Your workstations</string>
+    <string name="btn_add">Add</string>
+    <string name="hint_name">Name</string>
+    <string name="txt_your_pc_code">Your PC code:</string>
 </resources>

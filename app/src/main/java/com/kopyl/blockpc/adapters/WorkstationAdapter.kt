@@ -10,19 +10,24 @@ import com.kopyl.blockpc.models.WorkstationModel
 import kotlinx.android.synthetic.main.item_workstation.view.*
 
 class WorkstationAdapter(
-    private val mContext: Context,
-    private val mWorkstationList: List<WorkstationModel>
+    private val context: Context,
+    private val workstationList: MutableList<WorkstationModel>
 ): RecyclerView.Adapter<WorkstationViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WorkstationViewHolder {
-        val inflater = LayoutInflater.from(mContext)
+        val inflater = LayoutInflater.from(context)
         val view = inflater.inflate(R.layout.item_workstation, parent, false)
         return WorkstationViewHolder(view)
     }
 
-    override fun getItemCount(): Int = mWorkstationList.size
+    override fun getItemCount(): Int = workstationList.size
 
     override fun onBindViewHolder(holder: WorkstationViewHolder, position: Int) {
-        holder.bind(mWorkstationList[position])
+        holder.bind(workstationList[position])
+    }
+
+    fun addItem(workstationModel: WorkstationModel){
+        workstationList.add(workstationModel)
+        notifyItemInserted(workstationList.size - 1)
     }
 
 }

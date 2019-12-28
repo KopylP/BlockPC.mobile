@@ -29,6 +29,10 @@ android {
         }
     }
 
+    androidExtensions {
+        experimental = true
+    }
+
     flavorDimensions "version"
     productFlavors {
         qr {
@@ -44,7 +48,7 @@ android {
             dimension "version"
             applicationIdSuffix ".noneQr"
             versionNameSuffix "-noneQr"
-            buildConfigField("String", "CODE", "first-pc")
+            buildConfigField "String", "CODE", '"first-pc"'
         }
     }
 
@@ -52,7 +56,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'androidx.core:core-ktx:1.0.2'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
@@ -65,8 +69,9 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.google.android.material:material:1.2.0-alpha03'
-    compile "android.arch.persistence.room:runtime:1.0.0-alpha1"
+    implementation "android.arch.persistence.room:runtime:1.0.0-alpha1"
     kapt "android.arch.persistence.room:compiler:1.0.0-alpha1"
     implementation 'com.journeyapps:zxing-android-embedded:4.0.0'
     implementation 'com.google.zxing:core:3.3.2'
+    implementation 'com.google.android.material:material:1.2.0-alpha03'
 }
