@@ -7,7 +7,7 @@ import com.kopyl.blockpc.ui.addWorkstation.AddWorkstationPresenter
 import dagger.Component
 import javax.inject.Singleton
 
-@Component(modules = arrayOf(AppModule::class, MvpModule::class))
+@Component(modules = arrayOf(AppModule::class, MvpModule::class, FirebaseModule::class))
 @Singleton
 interface AppComponent {
 

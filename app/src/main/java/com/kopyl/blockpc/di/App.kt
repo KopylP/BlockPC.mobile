@@ -1,6 +1,7 @@
 package com.kopyl.blockpc.di
 
 import android.app.Application
+import com.google.firebase.FirebaseApp
 
 class App: Application(){
 
@@ -10,6 +11,7 @@ class App: Application(){
 
     override fun onCreate() {
         super.onCreate()
+        FirebaseApp.initializeApp(this)
         initDagger()
     }
 
@@ -17,6 +19,7 @@ class App: Application(){
         appComponent = DaggerAppComponent.builder()
             .appModule(AppModule(this))
             .mvpModule(MvpModule())
+            .firebaseModule(FirebaseModule())
             .build()
     }
 }

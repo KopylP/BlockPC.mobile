@@ -2,15 +2,31 @@ package com.kopyl.blockpc
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.PorterDuff
+import android.opengl.Visibility
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.integration.android.IntentIntegrator
 import com.kopyl.blockpc.adapters.WorkstationAdapter
 import com.kopyl.blockpc.di.App
 import com.kopyl.blockpc.mvp.contract.MainContract
 import com.kopyl.blockpc.ui.addWorkstation.AddWorkstationActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import android.view.View
+import android.widget.Button
+import androidx.annotation.RequiresApi
+import androidx.core.animation.doOnEnd
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.button.MaterialButton
+import com.kopyl.blockpc.models.WorkstationModel
+import com.kopyl.blockpc.utils.circularAnimation
+import kotlinx.android.synthetic.main.activity_main.bottom_sheet
+import kotlinx.android.synthetic.main.bottom_sheet_main.*
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), MainContract.View {
@@ -49,6 +65,64 @@ class MainActivity : AppCompatActivity(), MainContract.View {
         workstationAdapter = adapter
     }
 
+    override fun showSnackbar(message: String) {
+        Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun openBottomSheet(workstationModel: WorkstationModel) {
+        val bottomSheetBehavior = BottomSheetBehavior.from(bottom_sheet)
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+        tv_lock_workstation_name.text = workstationModel.name
+        tv_lock_workstation_code.text = workstationModel.code
+        darken.visibility = View.VISIBLE
+        btn_workstation_lock.setOnClickListener {
+            btn_workstation_lock.text = ""
+            val anim = circularAnimation(btn_workstation_lock, 24f)
+            anim?.doOnEnd {
+                pb_lock_workstation.visibility = View.VISIBLE
+                btn_workstation_lock.visibility = View.INVISIBLE
+                Handler().postDelayed({
+                    mainPresenter.lockWorktation(workstationModel)
+                }, 800)
+            }
+            anim?.start()
+        }
+        bottomSheetBehavior.addBottomSheetCallback(object: BottomSheetBehavior.BottomSheetCallback(){
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                if(newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    closeBottomSheet()
+                    bottomSheetBehavior.removeBottomSheetCallback(this)
+                }
+            }
+
+        })
+
+        darken.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+            darken.visibility = View.GONE
+        }
+    }
+
+    private fun closeBottomSheet(){
+        darken.visibility = View.GONE
+        btn_workstation_lock.visibility = View.VISIBLE
+        pb_lock_workstation.visibility = View.GONE
+        btn_workstation_lock.text = getString(R.string.btn_lock)
+    }
+
+    override fun showSuccessfulBottomSheet() {
+        val bottomSheetBehavior = BottomSheetBehavior.from(bottom_sheet)
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        closeBottomSheet()
+    }
+
+    override fun showFailureBotomSheet() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     companion object {
         private const val REQUEST_CODE_ACTIVITY_ADD_WORKSTATION = 1
     }
@@ -58,10 +132,9 @@ class MainActivity : AppCompatActivity(), MainContract.View {
         if(resultCode == Activity.RESULT_OK){
             when(requestCode){
                 REQUEST_CODE_ACTIVITY_ADD_WORKSTATION -> {
-                    //workstationAdapter.addItem(AddWorkstationActivity.getWorkstation(data!!)!!)
+                    workstationAdapter.addItem(AddWorkstationActivity.getWorkstation(data!!)!!)
                 }
             }
         }
     }
-
 }

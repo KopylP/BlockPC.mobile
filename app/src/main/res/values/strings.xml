@@ -1,7 +1,16 @@
 <resources>
     <string name="app_name">BlockPC</string>
+
     <string name="title_your_workstations">Your workstations</string>
+
     <string name="btn_add">Add</string>
+
     <string name="hint_name">Name</string>
+
     <string name="txt_your_pc_code">Your PC code:</string>
+
+    <string name="description_block_pc_button">Block pc button</string>
+    <string name="txt_want_lock_pc">Do you want lock your pc?</string>
+    <string name="btn_lock">Lock</string>
+    <string name="txt_workstation">Workstation</string>
 </resources>

@@ -20,6 +20,7 @@ import com.kopyl.blockpc.di.App
 import com.kopyl.blockpc.models.WorkstationModel
 import com.kopyl.blockpc.mvp.contract.AddWorkstationContract
 import com.kopyl.blockpc.mvp.contract.BaseContract
+import com.kopyl.blockpc.utils.circularAnimation
 import kotlinx.android.synthetic.main.activity_add_workstation.*
 import javax.inject.Inject
 
@@ -33,7 +34,7 @@ class AddWorkstationActivity : AppCompatActivity(), AddWorkstationContract.View 
     override fun closeActivity(model: WorkstationModel) {
         intent = Intent()
         intent.putExtra(EXTRA_WORKSTATION, model)
-        setResult(Activity.RESULT_OK)
+        setResult(Activity.RESULT_OK, intent)
         finish()
     }
 
@@ -55,20 +56,14 @@ class AddWorkstationActivity : AppCompatActivity(), AddWorkstationContract.View 
                 else -> {
                     val model =
                         WorkstationModel(et_workstation_name.text.toString(), workstationCode!!)
-                    val cx = btn_add.width / 2
-                    val cy = btn_add.height / 2
-                    val radius: Float = btn_add.width.toFloat()
-                    val anim = ViewAnimationUtils
-                        .createCircularReveal(btn_add, cx, cy, radius, 0f)
-                    anim.addListener(onEnd = {
+                    val anim = circularAnimation(btn_add, 0f)
+                    anim?.addListener(onEnd = {
                         btn_add.visibility = View.INVISIBLE
                         addWorkstationPresenter.addWorkstation(model)
                     })
-                    anim.start()
+                    anim?.start()
                 }
-
             }
-
         }
     }
 
