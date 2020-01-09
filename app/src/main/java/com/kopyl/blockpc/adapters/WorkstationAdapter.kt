@@ -33,6 +33,13 @@ class WorkstationAdapter(
         notifyItemInserted(workstationList.size - 1)
     }
 
+    fun deleteItem(position: Int) {
+        val model = workstationList[position]
+        workstationList.removeAt(position)
+        notifyItemRemoved(position)
+        workstationItemInterface.deletePC(model)
+    }
+
 }
 
 class WorkstationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

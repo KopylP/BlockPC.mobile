@@ -31,9 +31,9 @@ class AddWorkstationActivity : AppCompatActivity(), AddWorkstationContract.View 
 
     private var workstationCode: String? = null
 
-    override fun closeActivity(model: WorkstationModel) {
+    override fun closeActivity(modelId: Long) {
         intent = Intent()
-        intent.putExtra(EXTRA_WORKSTATION, model)
+        intent.putExtra(EXTRA_WORKSTATION_ID, modelId)
         setResult(Activity.RESULT_OK, intent)
         finish()
     }
@@ -69,7 +69,7 @@ class AddWorkstationActivity : AppCompatActivity(), AddWorkstationContract.View 
 
     companion object {
 
-        private const val EXTRA_WORKSTATION =
+        private const val EXTRA_WORKSTATION_ID =
             "package com.kopyl.blockpc.ui.addWorkstation extra workstation"
         private const val EXTRA_WORKSTATION_CODE =
             "package com.kopyl.blockpc.ui.addWorkstation extra workstation code"
@@ -80,8 +80,8 @@ class AddWorkstationActivity : AppCompatActivity(), AddWorkstationContract.View 
             return intent
         }
 
-        fun getWorkstation(intent: Intent): WorkstationModel? =
-            intent.getParcelableExtra(EXTRA_WORKSTATION)
+        fun getWorkstationId(intent: Intent): Long =
+            intent.getLongExtra(EXTRA_WORKSTATION_ID, 0)
     }
 
 }

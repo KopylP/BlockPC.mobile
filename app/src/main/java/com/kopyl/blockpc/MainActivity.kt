@@ -36,6 +36,8 @@ class MainActivity : AppCompatActivity(), MainContract.View {
 
     lateinit var workstationAdapter: WorkstationAdapter
 
+    private var isBottomSheetOpen: Boolean = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -63,6 +65,7 @@ class MainActivity : AppCompatActivity(), MainContract.View {
             this.adapter = adapter
         }
         workstationAdapter = adapter
+        mainPresenter.getItemTouchHelper()?.attachToRecyclerView(recycler_view)
     }
 
     override fun showSnackbar(message: String) {
@@ -71,6 +74,7 @@ class MainActivity : AppCompatActivity(), MainContract.View {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun openBottomSheet(workstationModel: WorkstationModel) {
+        isBottomSheetOpen = true
         val bottomSheetBehavior = BottomSheetBehavior.from(bottom_sheet)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
         tv_lock_workstation_name.text = workstationModel.name
@@ -83,7 +87,7 @@ class MainActivity : AppCompatActivity(), MainContract.View {
                 pb_lock_workstation.visibility = View.VISIBLE
                 btn_workstation_lock.visibility = View.INVISIBLE
                 Handler().postDelayed({
-                    mainPresenter.lockWorktation(workstationModel)
+                    mainPresenter.lockWorkstation(workstationModel)
                 }, 800)
             }
             anim?.start()
@@ -107,6 +111,7 @@ class MainActivity : AppCompatActivity(), MainContract.View {
     }
 
     private fun closeBottomSheet(){
+        isBottomSheetOpen = false
         darken.visibility = View.GONE
         btn_workstation_lock.visibility = View.VISIBLE
         pb_lock_workstation.visibility = View.GONE
@@ -117,10 +122,24 @@ class MainActivity : AppCompatActivity(), MainContract.View {
         val bottomSheetBehavior = BottomSheetBehavior.from(bottom_sheet)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
         closeBottomSheet()
+        showSnackbar(getString(R.string.msg_workstation_was_blocked))
     }
 
     override fun showFailureBotomSheet() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val bottomSheetBehavior = BottomSheetBehavior.from(bottom_sheet)
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        closeBottomSheet()
+        showSnackbar(getString(R.string.msg_workstation_was_not_blocked))
+    }
+
+    override fun onBackPressed() {
+        if(isBottomSheetOpen){
+            val bottomSheetBehavior = BottomSheetBehavior.from(bottom_sheet)
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+            closeBottomSheet()
+        } else {
+            super.onBackPressed()
+        }
     }
 
     companion object {
@@ -132,7 +151,9 @@ class MainActivity : AppCompatActivity(), MainContract.View {
         if(resultCode == Activity.RESULT_OK){
             when(requestCode){
                 REQUEST_CODE_ACTIVITY_ADD_WORKSTATION -> {
-                    workstationAdapter.addItem(AddWorkstationActivity.getWorkstation(data!!)!!)
+                    val modelId = AddWorkstationActivity.getWorkstationId(data!!)
+                    val workstationModel = mainPresenter.getWorkstationById(modelId)
+                    if (workstationModel != null) workstationAdapter.addItem(workstationModel)
                 }
             }
         }

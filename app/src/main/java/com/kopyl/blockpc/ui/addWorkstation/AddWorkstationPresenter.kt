@@ -17,8 +17,8 @@ class AddWorkstationPresenter: AddWorkstationContract.AddWorkstationPresenter() 
     }
 
     override fun addWorkstation(model: WorkstationModel) {
-        workstationDao.insertWorkstation(model)
-        view.closeActivity(model)
+        val id = workstationDao.insertWorkstation(model)
+        view.closeActivity(id)
     }
 
 }

@@ -13,4 +13,6 @@
     <string name="txt_want_lock_pc">Do you want lock your pc?</string>
     <string name="btn_lock">Lock</string>
     <string name="txt_workstation">Workstation</string>
+    <string name="msg_workstation_was_not_blocked">Your workstation was not blocked</string>
+    <string name="msg_workstation_was_blocked">Workstation was blocked successfully</string>
 </resources>

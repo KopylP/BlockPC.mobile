@@ -1,5 +1,6 @@
 package com.kopyl.blockpc.mvp.contract
 
+import androidx.recyclerview.widget.ItemTouchHelper
 import com.kopyl.blockpc.MainActivity
 import com.kopyl.blockpc.adapters.WorkstationAdapter
 import com.kopyl.blockpc.models.WorkstationModel
@@ -15,6 +16,8 @@ class MainContract {
 
     abstract class MainPresenter: BaseContract.Presenter<MainActivity>() {
         abstract fun getWorkstations()
-        abstract fun lockWorktation(workstationModel: WorkstationModel)
+        abstract fun getWorkstationById(id: Long): WorkstationModel?
+        abstract fun lockWorkstation(workstationModel: WorkstationModel)
+        abstract fun getItemTouchHelper(): ItemTouchHelper?
     }
 }

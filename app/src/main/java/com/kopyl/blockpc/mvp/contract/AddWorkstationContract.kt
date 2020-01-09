@@ -5,7 +5,7 @@ import com.kopyl.blockpc.ui.addWorkstation.AddWorkstationActivity
 
 class AddWorkstationContract {
     interface View: BaseContract.View {
-        fun closeActivity(model: WorkstationModel)
+        fun closeActivity(modelId: Long)
     }
 
     abstract  class  AddWorkstationPresenter: BaseContract.Presenter<AddWorkstationActivity>(){

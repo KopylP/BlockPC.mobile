@@ -13,7 +13,7 @@ interface WorkstationDao {
     fun getWorkstationById(id: Long): WorkstationModel
 
     @Insert(onConflict = REPLACE)
-    fun insertWorkstation(workstation: WorkstationModel)
+    fun insertWorkstation(workstation: WorkstationModel): Long
 
     @Update(onConflict = REPLACE)
     fun updateWorkstation(workstation: WorkstationModel)
