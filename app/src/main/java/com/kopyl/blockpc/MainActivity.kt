@@ -2,9 +2,6 @@ package com.kopyl.blockpc
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.PorterDuff
-import android.opengl.Visibility
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -18,16 +15,19 @@ import com.kopyl.blockpc.mvp.contract.MainContract
 import com.kopyl.blockpc.ui.addWorkstation.AddWorkstationActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import android.view.View
-import android.widget.Button
 import androidx.annotation.RequiresApi
 import androidx.core.animation.doOnEnd
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.button.MaterialButton
+import com.kopyl.blockpc.extensions.ownInitScan
 import com.kopyl.blockpc.models.WorkstationModel
 import com.kopyl.blockpc.utils.circularAnimation
 import kotlinx.android.synthetic.main.activity_main.bottom_sheet
 import kotlinx.android.synthetic.main.bottom_sheet_main.*
 import javax.inject.Inject
+import kotlinx.android.synthetic.main.activity_add_workstation.*
+
+
+
 
 class MainActivity : AppCompatActivity(), MainContract.View {
 
@@ -54,7 +54,9 @@ class MainActivity : AppCompatActivity(), MainContract.View {
                 intent = AddWorkstationActivity.newIntent(this, "first-pc")
                 startActivityForResult(intent, REQUEST_CODE_ACTIVITY_ADD_WORKSTATION)
             } else {
-                IntentIntegrator(this).initiateScan()
+                //IntentIntegrator(this).initiateScan()
+                val integrator = IntentIntegrator(this)
+                    .ownInitScan()
             }
         }
     }
@@ -69,7 +71,7 @@ class MainActivity : AppCompatActivity(), MainContract.View {
     }
 
     override fun showSnackbar(message: String) {
-        Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(btn_add, message, Snackbar.LENGTH_SHORT).show()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -148,6 +150,19 @@ class MainActivity : AppCompatActivity(), MainContract.View {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
+        if(result != null){
+            if(result.contents != null){
+                val qrCodeArray = result.contents.split("/")
+                if(qrCodeArray.size != 2 || qrCodeArray[0] != getString(R.string.validation_qr_code)){
+                    showSnackbar(getString(R.string.msg_qr_code_is_incorrect))
+                    return
+                }
+                intent = AddWorkstationActivity.newIntent(this, qrCodeArray[1])
+                startActivityForResult(intent, REQUEST_CODE_ACTIVITY_ADD_WORKSTATION)
+                return
+            }
+        }
         if(resultCode == Activity.RESULT_OK){
             when(requestCode){
                 REQUEST_CODE_ACTIVITY_ADD_WORKSTATION -> {
