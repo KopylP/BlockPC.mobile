@@ -4,6 +4,8 @@ import com.kopyl.blockpc.MainActivity
 import com.kopyl.blockpc.MainPresenter
 import com.kopyl.blockpc.ui.addWorkstation.AddWorkstationActivity
 import com.kopyl.blockpc.ui.addWorkstation.AddWorkstationPresenter
+import com.kopyl.blockpc.ui.lockWorkstation.LockWorkstationFragment
+import com.kopyl.blockpc.ui.lockWorkstation.LockWorkstationPresenter
 import dagger.Component
 import javax.inject.Singleton
 
@@ -15,5 +17,7 @@ interface AppComponent {
     fun inject(mainPresenter: MainPresenter)
     fun inject(addWorkstationActivity: AddWorkstationActivity)
     fun inject(addWorkstationPresenter: AddWorkstationPresenter)
+    fun inject(lockWorkstationPresenter: LockWorkstationPresenter)
+    fun inject(lockWorkstationFragment: LockWorkstationFragment)
 
 }

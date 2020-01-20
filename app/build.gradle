@@ -43,12 +43,13 @@ android {
             dimension "version"
             applicationIdSuffix ".qr"
             versionNameSuffix "-qr"
+            buildConfigField "String", "CODE", '"-"'
         }
         noneQr {
             dimension "version"
             applicationIdSuffix ".noneQr"
             versionNameSuffix "-noneQr"
-            buildConfigField "String", "CODE", '"first-pc"'
+            buildConfigField "String", "CODE", '"-LykYX2TH8oEyTE4txuL"'
         }
     }
 
@@ -77,5 +78,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-database:19.2.0'
     implementation 'com.google.firebase:firebase-core:17.2.1'
     implementation 'com.google.code.gson:gson:2.8.6'
+    compile "org.jetbrains.kotlin:kotlin-reflect:1.3.50"
 }
 apply plugin: 'com.google.gms.google-services'

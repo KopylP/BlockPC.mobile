@@ -8,8 +8,7 @@ annotation class BaseContract {
         fun attach(view: V){
             this.view = view
         }
-        fun detach(){
-
+        open fun detach() {
         }
     }
 }

@@ -18,8 +18,6 @@ class MainPresenter: MainContract.MainPresenter(), WorkstationItemInterface {
     @Inject
     lateinit var workstationDao: WorkstationDao
 
-    @Inject
-    lateinit var lockFirebaseClient: IFirebaseClient
 
     private var itemTouchHelper: ItemTouchHelper? = null
 
@@ -51,16 +49,6 @@ class MainPresenter: MainContract.MainPresenter(), WorkstationItemInterface {
         workstationDao.deleteWorkstation(workstationModel)
     }
 
-
-    override fun lockWorkstation(workstationModel: WorkstationModel) {
-        lockFirebaseClient.post(workstationModel.code + "/lock-model", LockModel(true))
-            .addOnCompleteListener {
-                when {
-                    it.isSuccessful -> view.showSuccessfulBottomSheet()
-                    else -> view.showFailureBotomSheet()
-                }
-            }
-    }
 
     override fun getWorkstationById(id: Long): WorkstationModel? {
         return workstationDao.getWorkstationById(id)

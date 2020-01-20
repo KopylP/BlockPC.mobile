@@ -20,23 +20,19 @@ import androidx.core.animation.doOnEnd
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.kopyl.blockpc.extensions.ownInitScan
 import com.kopyl.blockpc.models.WorkstationModel
-import com.kopyl.blockpc.utils.circularAnimation
-import kotlinx.android.synthetic.main.activity_main.bottom_sheet
-import kotlinx.android.synthetic.main.bottom_sheet_main.*
+import com.kopyl.blockpc.ui.lockWorkstation.LockWorkstationFragment
 import javax.inject.Inject
 import kotlinx.android.synthetic.main.activity_add_workstation.*
+import kotlin.reflect.jvm.internal.impl.renderer.ClassifierNamePolicy
 
 
-
-
-class MainActivity : AppCompatActivity(), MainContract.View {
+class MainActivity : AppCompatActivity(), MainContract.View, LockWorkstationFragment.ILockWorkstationResult {
 
     @Inject
     lateinit var mainPresenter: MainPresenter
 
     lateinit var workstationAdapter: WorkstationAdapter
 
-    private var isBottomSheetOpen: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,7 +47,7 @@ class MainActivity : AppCompatActivity(), MainContract.View {
     private fun initListeners(){
         this.floating_action_button.setOnClickListener {
             if(BuildConfig.FLAVOR == "noneQr"){
-                intent = AddWorkstationActivity.newIntent(this, "first-pc")
+                intent = AddWorkstationActivity.newIntent(this, BuildConfig.CODE)
                 startActivityForResult(intent, REQUEST_CODE_ACTIVITY_ADD_WORKSTATION)
             } else {
                 //IntentIntegrator(this).initiateScan()
@@ -74,75 +70,13 @@ class MainActivity : AppCompatActivity(), MainContract.View {
         Snackbar.make(btn_add, message, Snackbar.LENGTH_SHORT).show()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun openBottomSheet(workstationModel: WorkstationModel) {
-        isBottomSheetOpen = true
-        val bottomSheetBehavior = BottomSheetBehavior.from(bottom_sheet)
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-        tv_lock_workstation_name.text = workstationModel.name
-        tv_lock_workstation_code.text = workstationModel.code
-        darken.visibility = View.VISIBLE
-        btn_workstation_lock.setOnClickListener {
-            btn_workstation_lock.text = ""
-            val anim = circularAnimation(btn_workstation_lock, 24f)
-            anim?.doOnEnd {
-                pb_lock_workstation.visibility = View.VISIBLE
-                btn_workstation_lock.visibility = View.INVISIBLE
-                Handler().postDelayed({
-                    mainPresenter.lockWorkstation(workstationModel)
-                }, 800)
-            }
-            anim?.start()
-        }
-        bottomSheetBehavior.addBottomSheetCallback(object: BottomSheetBehavior.BottomSheetCallback(){
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
-
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                if(newState == BottomSheetBehavior.STATE_COLLAPSED) {
-                    closeBottomSheet()
-                    bottomSheetBehavior.removeBottomSheetCallback(this)
-                }
-            }
-
-        })
-
-        darken.setOnClickListener {
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-            darken.visibility = View.GONE
+        if(supportFragmentManager.findFragmentByTag(LockWorkstationFragment.TAG) == null) {
+            val lockWorkstationFragment = LockWorkstationFragment.newInstance(workstationModel)
+            lockWorkstationFragment.show(supportFragmentManager, LockWorkstationFragment.TAG)
         }
     }
 
-    private fun closeBottomSheet(){
-        isBottomSheetOpen = false
-        darken.visibility = View.GONE
-        btn_workstation_lock.visibility = View.VISIBLE
-        pb_lock_workstation.visibility = View.GONE
-        btn_workstation_lock.text = getString(R.string.btn_lock)
-    }
-
-    override fun showSuccessfulBottomSheet() {
-        val bottomSheetBehavior = BottomSheetBehavior.from(bottom_sheet)
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-        closeBottomSheet()
-        showSnackbar(getString(R.string.msg_workstation_was_blocked))
-    }
-
-    override fun showFailureBotomSheet() {
-        val bottomSheetBehavior = BottomSheetBehavior.from(bottom_sheet)
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-        closeBottomSheet()
-        showSnackbar(getString(R.string.msg_workstation_was_not_blocked))
-    }
-
-    override fun onBackPressed() {
-        if(isBottomSheetOpen){
-            val bottomSheetBehavior = BottomSheetBehavior.from(bottom_sheet)
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-            closeBottomSheet()
-        } else {
-            super.onBackPressed()
-        }
-    }
 
     companion object {
         private const val REQUEST_CODE_ACTIVITY_ADD_WORKSTATION = 1
@@ -173,4 +107,16 @@ class MainActivity : AppCompatActivity(), MainContract.View {
             }
         }
     }
+
+    override fun onLockWorkstationResult(
+        workstationModel: WorkstationModel,
+        responseState: LockWorkstationFragment.ResponseState
+    ) {
+        val message = when(responseState){
+            LockWorkstationFragment.ResponseState.SUCCESS -> "Workstation was blocked successfully"
+            else -> "Workstation was not blocked"
+        }
+        Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show()
+    }
+
 }
